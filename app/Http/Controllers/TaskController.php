@@ -62,7 +62,7 @@ class TaskController extends Controller
         ]);
 
         if($task->status !== $validated['status']) {
-            event(new TaskStatusUpdated($task));
+            broadcast(new TaskStatusUpdated($task))->toOthers();
         }
         $task->update($validated);
         return redirect()->back()->with('success', 'Task updated successfully!');

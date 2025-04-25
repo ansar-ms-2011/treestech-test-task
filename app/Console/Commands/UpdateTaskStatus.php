@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\TaskStatusUpdated;
 use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -34,29 +35,31 @@ class UpdateTaskStatus extends Command
         
         // Fetch tasks that are pending and due today
         // and update their status to 'in_progress'
-        $tasks = Task::where('status', 'pending')
+        $pending_tasks = Task::where('status', 'pending')
             ->where('due_date', $today)
             ->get();
 
-            Log::info("Pending tasks due today: " . $tasks->count());
-        foreach ($tasks as $task) {
+        foreach ($pending_tasks as $task) {
             $task->status = 'in_progress';
             $task->save();
         }
 
-        $this->info("Updated " . $tasks->count() . " tasks to 'in_progress'");
+        $this->info("Updated " . $pending_tasks->count() . " tasks to 'in_progress'");
 
         // Fetch tasks that are in_progress and due_date has passes
         // and update their status to 'completed'
-        $tasks = Task::where('status', 'in_progress')
+        $in_progress_tasks = Task::where('status', 'in_progress')
             ->where('due_date', '<', $today)
             ->get();
 
-        foreach ($tasks as $task) {
+        foreach ($in_progress_tasks as $task) {
             $task->status = 'completed';
             $task->save();
         }
 
-        $this->info("Updated " . $tasks->count() . " tasks to 'completed'");
+        $this->info("Updated " . $in_progress_tasks->count() . " tasks to 'completed'");
+        if($pending_tasks->count() > 0 || $in_progress_tasks->count() > 0){
+            broadcast(new TaskStatusUpdated($task))->toOthers();
+        }
     }
 }

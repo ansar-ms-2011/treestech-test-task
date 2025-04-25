@@ -129,11 +129,6 @@ const isAdmin = roles.includes('admin');
 const isManager = roles.includes('manager');
 const isUser = roles.includes('user');
 
-console.log('User Roles:', roles);
-console.log('Is Admin:', isAdmin);
-console.log('Is Manager:', isManager);
-console.log('Is User:', isUser);
-
 const emit = defineEmits(['created', 'updated', 'close']);
 const props = defineProps({
     task: {

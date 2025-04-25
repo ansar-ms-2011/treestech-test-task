@@ -64,6 +64,8 @@ import { Head, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { onBeforeMount, ref } from 'vue';
 import TaskForm from './TaskForm.vue';
+import { toast } from 'vue3-toastify';
+
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -79,11 +81,6 @@ const isAdmin = roles.includes('admin');
 const isManager = roles.includes('manager');
 const isUser = roles.includes('user');
 
-console.log('User Roles:', roles);
-console.log('Is Admin:', isAdmin);
-console.log('Is Manager:', isManager);
-console.log('Is User:', isUser);
-
 const flashedMessages = page.props.flash;
 const tasks = ref([]);
 const showCreateForm = ref(false);
@@ -96,6 +93,9 @@ onBeforeMount(() => {
 echo.channel('treestech-test-task').listen('.status.updated', (e) => {
     console.log('Task updated:', e.task);
     fetchTasks();
+    toast.success('🎉 Task Status updated', {
+    className: 'bg-green-500 text-white font-medium rounded shadow'
+  })
 });
 
 const fetchTasks = async () => {
