@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TaskStatusUpdated;
 use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class TaskController extends Controller
 {
 
     public function getTaskPage(){
-
-
         return Inertia::render('tasks/TaskList', [
             'users' =>  User::role('user')->select('name as label', 'id as value')->get(),
         ]);
@@ -42,6 +40,7 @@ class TaskController extends Controller
         ]);
 
         $task = Task::create($validated);
+        
         return redirect()->back()->with('success', 'Task created successfully!');
     }
 
@@ -62,6 +61,9 @@ class TaskController extends Controller
             'assigned_to_id' => 'nullable|exists:users,id',
         ]);
 
+        if($task->status !== $validated['status']) {
+            event(new TaskStatusUpdated($task));
+        }
         $task->update($validated);
         return redirect()->back()->with('success', 'Task updated successfully!');
     }

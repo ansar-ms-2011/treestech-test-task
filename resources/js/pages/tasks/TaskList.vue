@@ -38,7 +38,10 @@
                             <Button class="ml-1 rounded bg-green-600 px-4 py-2 font-semibold text-white hover:bg-green-700" @click="editTask(task)"
                                 >Edit</Button
                             >
-                            <Button v-if="isAdmin" class="ml-1 rounded bg-red-600 px-4 py-2 font-semibold text-white hover:bg-red-700" @click="deleteTask(task.id)"
+                            <Button
+                                v-if="isAdmin"
+                                class="ml-1 rounded bg-red-600 px-4 py-2 font-semibold text-white hover:bg-red-700"
+                                @click="deleteTask(task.id)"
                                 >Delete</Button
                             >
                         </td>
@@ -54,6 +57,7 @@
 
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
+import echo from '@/echo.js';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
@@ -70,13 +74,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const page = usePage();
 const users = page.props.users;
-const roles = page.props.auth.roles
+const roles = page.props.auth.roles;
 const isAdmin = roles.includes('admin');
 const isManager = roles.includes('manager');
 const isUser = roles.includes('user');
 
 console.log('User Roles:', roles);
-console.log('Is Admin:', isAdmin);  
+console.log('Is Admin:', isAdmin);
 console.log('Is Manager:', isManager);
 console.log('Is User:', isUser);
 
@@ -86,6 +90,11 @@ const showCreateForm = ref(false);
 const editingTask = ref(null);
 
 onBeforeMount(() => {
+    fetchTasks();
+});
+
+echo.channel('treestech-test-task').listen('.status.updated', (e) => {
+    console.log('Task updated:', e.task);
     fetchTasks();
 });
 
