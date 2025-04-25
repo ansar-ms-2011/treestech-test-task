@@ -30,8 +30,16 @@
                         <td class="px-4 py-3">{{ task.title }}</td>
                         <td class="px-4 py-3">{{ task.description }}</td>
                         <td class="px-4 py-3">{{ formatDate(task.due_date) }}</td>
-                        <td class="px-4 py-3">{{ task.priority }}</td>
-                        <td class="px-4 py-3">{{ task.status }}</td>
+                        <td class="px-4 py-3">
+                            <span class="mr-2 inline-block rounded capitalize bg-green-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+                                {{ task.priority }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="mr-2 inline-block rounded capitalize bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+                                {{ task.status.replace('_', ' ') }}
+                            </span>
+                        </td>
                         <td class="px-4 py-3">{{ task.user ? task.user.name : '' }}</td>
                         <td class="px-4 py-3">{{ task.assigned_to ? task.assigned_to.name : 'Unassigned' }}</td>
                         <td class="px-4 py-3">
@@ -63,9 +71,8 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { onBeforeMount, ref } from 'vue';
-import TaskForm from './TaskForm.vue';
 import { toast } from 'vue3-toastify';
-
+import TaskForm from './TaskForm.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -94,8 +101,8 @@ echo.channel('treestech-test-task').listen('.status.updated', (e) => {
     console.log('Task updated:', e.task);
     fetchTasks();
     toast.success('🎉 Task Status updated', {
-    className: 'bg-green-500 text-white font-medium rounded shadow'
-  })
+        className: 'bg-green-500 text-white font-medium rounded shadow',
+    });
 });
 
 const fetchTasks = async () => {

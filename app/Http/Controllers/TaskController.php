@@ -19,11 +19,14 @@ class TaskController extends Controller
     
     public function index()
     {
-        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('manager')){
-            $tasks = Task::with('user', 'assigned_to')->get();
-        }else{
-            $tasks = Task::where('assigned_to_id', auth()->user()->id)->with('user', 'assigned_to')->get();
+        $current_user = auth()->user()->id;
+        $tasks = Task::with(['user', 'assigned_to']);
+
+        if(auth()->user()->hasRole('user')){
+            $tasks->where('assigned_to_id', $current_user);
         }
+        $tasks = $tasks->orderBy('priority', 'asc')->orderBy('status', 'asc')->get();
+
         return response()->json($tasks);
     }
 
